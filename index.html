@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Repartidor de Gastos</title>
+</head>
+
+<body>
+    <h1>Bienvenido al repartidor de Gastos</h1>
+    <main>
+
+        <section id="insertar-gastos">
+            <h3>Compras:</h3>
+
+            <form id="form-gastos">
+                <input type="text" placeholder="Quien" id="input-persona">
+                <label for="item"> compro </label>
+                <input type="text" name="item" id="item" placeholder="elemento">
+                <label for> gastando: </label>
+                <input type="number" id="gasto" placeholder="dinero" required>
+                <button>Listo</button>
+            </form>
+
+        </section>
+
+        <section id="muestra-de-gastos">
+            <h3>Todos los gastos:</h3>
+            <div id="lista-de-gastos">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Item</th>
+                            <th>Precio</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cuerpoTabla">
+                        <!-- Aquí se inyectarán las filas -->
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td>Total:</td>
+                            <td id="totalMostrado"></td>
+                        </tr>
+                    </tfoot>
+                </table>
+
+            </div>
+        </section>
+
+        <section id="participantes">
+            <h3>Participantes:</h3>
+
+            <form id="form-repartir">
+
+                <label for="numero-participantes">Cuantos Participantes?</label>
+                <input type="number" placeholder="2" id="cantParticipantes" required>
+                <button>Listo</button>
+                </form>
+
+                <div>
+                    <table id="tablaRepartidora">
+                        <thead>
+                            <tr id="encabezadoDeItems">
+                            <!--Se insertan columnas con productos-->
+                            </tr>
+                        </thead>
+
+                        <tbody id="bodyRepartidora">
+                            <!-- Aqui se inseraran los nombres-->
+                        </tbody>
+                                         
+                    </table>
+                </div>
+
+            
+        </section>
+
+        <section id="reparticion">
+            <h3>Cada uno debe aportar:</h3>
+
+        </section>
+    </main>
+    <script src="script.js"></script>
+</body>
+
+</html>
