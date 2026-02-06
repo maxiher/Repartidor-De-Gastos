@@ -26,7 +26,7 @@ formGastos.addEventListener("submit", (e) => {
         comprador: nombrePersona,
         nombreItem: item,
         precio: gasto 
-    }
+    }  
 
     //Se los paso a un array
     todosLosItemes.push(cadaItem);
@@ -35,7 +35,7 @@ formGastos.addEventListener("submit", (e) => {
     //Inserto una fila con los datos de cada compra
     cuerpoTabla.innerHTML += `
     <tr>
-    <td>${nombrePersona}</td><td> ${item} </td><td> ${gasto}</td></p>
+    <th>${nombrePersona}</th><td> ${item} </td><td> ${gasto}</td>
     </tr>
     `
 
@@ -96,7 +96,11 @@ function crearTabla(listaEncabezados, totalFilas){
 
         for(let j = 0; j < listaEncabezados.length; j++){
             let td = document.createElement('td');
-            td.innerHTML= `<input type="checkbox"/>`
+            td.innerHTML= `<input type="checkbox" name="${listaEncabezados[j].nombreItem}"/>`;
+
+            console.log(listaEncabezados)
+
+
 
             tr.appendChild(td);
         }

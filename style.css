@@ -1,5 +1,5 @@
 html {
-    background-color: rgb(243, 252, 253);
+    background-color: rgb(255, 255, 255);
 }
 
 h1 {
@@ -14,9 +14,27 @@ body {
     margin-left: 20%;
     min-height: 30rem;
     padding: 2%;
-    background-color: rgba(197, 250, 252, 0.979);
+    background-color: rgba(191, 250, 252, 0.979);
     border-radius: 2%;
     border: rgb(55, 117, 252) 2px solid;
 
+}
+table {
+    border-collapse: collapse;
+}
+
+table td {
+    min-width: 75px;
+    text-align: center;
+    
+}
+
+table th, td{
+    border: black 1px solid;
+    background-color: rgb(255, 255, 255);
+}
+
+#form-repartir {
+    margin-bottom: 5px;
 }
 
