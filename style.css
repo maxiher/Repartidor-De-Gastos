@@ -1,0 +1,22 @@
+html {
+    background-color: rgb(243, 252, 253);
+}
+
+h1 {
+    justify-self: center;
+    margin: 0;
+    
+}
+
+body {
+    margin-top: 2%;
+    margin-right: 20%;
+    margin-left: 20%;
+    min-height: 30rem;
+    padding: 2%;
+    background-color: rgba(197, 250, 252, 0.979);
+    border-radius: 2%;
+    border: rgb(55, 117, 252) 2px solid;
+
+}
+

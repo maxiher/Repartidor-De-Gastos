@@ -5,10 +5,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Repartidor de Gastos</title>
+    <link href="style.css" rel="stylesheet">
 </head>
 
 <body>
-    <h1>Bienvenido al repartidor de Gastos</h1>
+    <h1>Repartidor de Gastos</h1>
     <main>
 
         <section id="insertar-gastos">
@@ -18,7 +19,7 @@
                 <input type="text" placeholder="Quien" id="input-persona">
                 <label for="item"> compro </label>
                 <input type="text" name="item" id="item" placeholder="elemento">
-                <label for> gastando: </label>
+                <label for="gasto"> gastando: </label>
                 <input type="number" id="gasto" placeholder="dinero" required>
                 <button>Listo</button>
             </form>
@@ -26,7 +27,7 @@
         </section>
 
         <section id="muestra-de-gastos">
-            <h3>Todos los gastos:</h3>
+            <h4 id="detalle-gastos">Detalle de Gastos:</h4>
             <div id="lista-de-gastos">
                 <table>
                     <thead>
@@ -55,7 +56,7 @@
 
             <form id="form-repartir">
 
-                <label for="numero-participantes">Cuantos Participantes?</label>
+                <label for="cantParticipantes">Cuantos Participantes?</label>
                 <input type="number" placeholder="2" id="cantParticipantes" required>
                 <button>Listo</button>
                 </form>

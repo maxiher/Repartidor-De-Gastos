@@ -50,42 +50,61 @@ console.log(todosLosItemes)
 //Determinar cantidad de participantes y en que gasto participo
 const formRepartir = document.getElementById('form-repartir');
 
+const tablaRepartidora = document.getElementById('tablaRepartidora')
+
 const cantParticipantes = document.getElementById('cantParticipantes'); //Cantidad de participantes general
 
 formRepartir.addEventListener("submit", (e) => {
     e.preventDefault();
     
-    const filasParticipantes = document.getElementById('bodyRepartidora');
-
-    filasParticipantes.innerHTML = "";
-
-    //Genero una fila de acuerdo a la cantidad de participantes
-    for(let i=1; i <= cantParticipantes.value; i++){
-
-        const fila = `<tr>
-            <td><input type="text" placeholder="Participante ${i}"></input></td>
-        </tr>`    
-    
-        filasParticipantes.innerHTML += fila;
-        }
-
-    const encabezadoConItems = document.getElementById('encabezadoDeItems')
-
-    //Genero un columna de acuerdo a la cantidad de items comprados    
-    for(let i=0; i < todosLosItemes.length; i++){
-        const columna = `
-        <th>Nombre</th>
-        <th>${todosLosItemes[i].nombreItem}</th>` 
-
-        encabezadoConItems.innerHTML = "";
-
-        encabezadoConItems.innerHTML += columna; 
-
-        //columna.innerHTML += columnaCheckbox;
-
-      }  
+    crearTabla(todosLosItemes, cantParticipantes.value);
+      
 })
 
+//IDEA: AGREGAR ELEMENTOS COMPRADOS POR LA MISMA PERSONA QUE HAYAN CONSUMIDO TODOS Y SE MARQUEN TRUE AUTOMATICAMENTE
+
+function crearTabla(listaEncabezados, totalFilas){
+
+    tablaRepartidora.innerHTML = "";    
+        
+        let encabezado = document.createElement('tr');
+        let primerCelda = document.createElement('th')
+        primerCelda.textContent = "Nombre";
+
+        encabezado.appendChild(primerCelda);//Primera celda del encabezados (participantes)
+
+
+        listaEncabezados.forEach(element => {
+            let th = document.createElement('th');
+            th.textContent = element.nombreItem;
+            encabezado.appendChild(th);
+        });
+
+        let encabezadoTotal = document.createElement('th');
+        encabezadoTotal.textContent = "Total";
+
+        encabezado.appendChild(encabezadoTotal);
+        
+    tablaRepartidora.appendChild(encabezado);
+
+    for(let i = 1; i <= totalFilas; i++){
+        let tr = document.createElement('tr');
+
+        let thParticipantes = document.createElement('th');
+        thParticipantes.innerHTML = `<input type="text" placeholder="Participante ${i}"/>`;
+        tr.appendChild(thParticipantes);
+
+        for(let j = 0; j < listaEncabezados.length; j++){
+            let td = document.createElement('td');
+            td.innerHTML= `<input type="checkbox"/>`
+
+            tr.appendChild(td);
+        }
+
+        tablaRepartidora.appendChild(tr);
+    }
+
+}
    
     
     
