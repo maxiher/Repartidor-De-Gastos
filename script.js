@@ -43,6 +43,9 @@ formGastos.addEventListener("submit", (e) => {
     totalMostrado.innerHTML = totalGeneral.toFixed(1);
 
     formGastos.reset()
+    if(tablaRepartidora){
+        crearTabla(todosLosItemes, cantParticipantes.value);
+    } 
 })
 
 //Determinar cantidad de participantes y en que gasto participo
@@ -59,11 +62,11 @@ formRepartir.addEventListener("submit", (e) => {
 
 })
 
-//IDEA: AGREGAR ELEMENTOS COMPRADOS POR LA MISMA PERSONA QUE HAYAN CONSUMIDO TODOS Y SE MARQUEN TRUE AUTOMATICAMENTE
 
 function crearTabla(listaEncabezados, totalFilas) {
 
     console.log(listaEncabezados[0].nombreItem);
+    
 
     tablaRepartidora.innerHTML = "";
 
@@ -90,19 +93,19 @@ function crearTabla(listaEncabezados, totalFilas) {
 
     tablaRepartidora.appendChild(encabezado);
 
-    for (let i = 1; i <= totalFilas; i++) {
-        let tr = document.createElement('tr'); //Creo fila de talba repartidora de acuerdo a la cantidad de participantes ingresada en el input
+    for (let i = 0; i < totalFilas; i++) {
+        let tr = document.createElement('tr'); //Creo fila de tabla repartidora de acuerdo a la cantidad de participantes ingresada en el input
 
 
         let thParticipantes = document.createElement('th');
-        thParticipantes.id = `id="participante${i}"`; //Le agrego un id por participante
+        thParticipantes.id = `"participante${i}"`; //Le agrego un id por participante
 
         let thInput = document.createElement('input')
-        thInput.type = "text";                              //TENGO QUE AVERIGUAR COMO ASIGNARLE NOMBRE UNA VEZ RELLENADO EL INPUT.
-        thInput.id = `participante-${i}`
+        thInput.type = "text";                              
+        thInput.id = `participante-${i}`;
         thInput.placeholder = `Participante ${i}`;
-        thInput.className = "cada-participante"
-        //thParticipantes.innerHTML = `<input type="text" placeholder="Participante${i}/>"`;
+        thInput.className = "cada-participante";
+        thInput.dataset.index = i;
 
 
         tr.appendChild(thParticipantes);
@@ -114,12 +117,12 @@ function crearTabla(listaEncabezados, totalFilas) {
 
             //Se crean los inputs en cada celda
             let checkbox = document.createElement('input');
-            checkbox.className = `p-${i} i-${j}`
+            checkbox.className = `check`;
             checkbox.type = 'checkbox';
-            checkbox.name = `${listaEncabezados[j].nombreItem}` //ACA TENGO EL PROBLEMA
-            //Tengo que ver el tema del id que me conviene
-
-            //POR ACA VOY A TENER QUE MANEJAR SU ESTADO
+            checkbox.name = `${listaEncabezados[j].nombreItem}`;
+            checkbox.dataset.fila = `${i}`;
+            checkbox.dataset.columna = `${j}`;
+            
             td.appendChild(checkbox);
 
             let tdTotal = document.createElement("totalIndividual");
@@ -133,6 +136,7 @@ function crearTabla(listaEncabezados, totalFilas) {
 
         let mostrarTotalIndividual = document.createElement('th');
         mostrarTotalIndividual.id = `total-${i}`;
+        mostrarTotalIndividual.className = "totales";
 
         tr.appendChild(mostrarTotalIndividual)
 
@@ -141,66 +145,50 @@ function crearTabla(listaEncabezados, totalFilas) {
 
 }
 
-//function para hacer array Con CADA PARTICIPANTE y dentro CADA ITEM
-function itemsPorParticipante() {
 
-    const totalDeInputs = document.querySelectorAll('.cada-participante')
+function calcularTotalesIndividuales(){
+    
+    let subtotales = new Array(Number(cantParticipantes.value)).fill(0);//Creo array con tantos 0 como paticipantes 
+    let participantesPorItem = new Array(todosLosItemes.length).fill(0);//Creo attay tantos 0 como items
 
-    let listaPorParticipante = [];
+    console.log(subtotales)
+    console.log(participantesPorItem)
 
+    const todosCheckbox = document.querySelectorAll('.check:checked');
+    
+    todosCheckbox.forEach((element) => {
+        
+        participantesPorItem[Number(element.dataset.columna)]++
+    })
+    
 
-    for (let i = 1; i <= totalDeInputs.length; i++) {
-        let participantesInput = document.getElementById(`participante-${i}`);//Traigo del dom todos los inputs para recorrer sus valores si los tienen
+    todosCheckbox.forEach((element) => {
+        
+        let numeroFila = Number(element.dataset.fila);//indice participante 
+        let numeroColumna = Number(element.dataset.columna);//indice item
 
-        if (participantesInput.value === '') {
-            listaPorParticipante.push({
-                Nombre: `Participante ${i}`
-            })
-        } else {
-            listaPorParticipante.push({
-                Nombre: participantesInput.value
-            })
-        }
-        //bucle para tener en cuenta tantos la cantidad de participantes como de items
-        for (let j = 0; j < todosLosItemes.length; j++) {
-            let cadaCheckbox = document.querySelector(`.p-${i}.i-${j}`)
-            console.log(cadaCheckbox)
+        let precio = todosLosItemes[numeroColumna].precio;
+        let divisor = participantesPorItem[numeroColumna];
 
-        }
+        let cadaSubtotal = precio / divisor;
+        subtotales[numeroFila] += cadaSubtotal;
+        }  
+    )
+
+    for(let i=0; i < subtotales.length; i++){
+        let indiceSubtotal = document.getElementById(`total-${i}`)
+        indiceSubtotal.textContent = subtotales[i].toFixed(1)
     }
-    console.log(listaPorParticipante);
+    console.log(participantesPorItem)
+    }
 
 
-}
+tablaRepartidora.addEventListener('change', (e) => {
 
-tablaRepartidora.addEventListener("change", () => {
-    itemsPorParticipante();
+    calcularTotalesIndividuales()
+    
 })
 
-/* participantesInput.forEach(input => {
-    listaPorParticipante.push({
-        Nombre: input.value
-    });
-
-    console.log
-})  
-} */
-
-
-
-
-//Creo que para resolver el total de cada participante deberia crear constantes dirigidas a: 
-//la clase o id del input donde aclara su indice, y los checkbox que corresponden al mismo
-// indice. Luego hacer un if donde me fijo entre cuantos participantes dividir cada value -> item.
-//Para mostrar el total individual debo agregar una celda th debajo de total o en el ultimo lugar
-//de la fila e insertarle la suma de dividir cada item en el que participo entre la cantidad de
-//participantes.  
-
-
-
-
-
-console.log(todosLosItemes);
 
 
 
