@@ -4,11 +4,7 @@ const formGastos = document.getElementById('form-gastos'); //form para ingresar 
 const cuerpoTabla = document.getElementById('cuerpoTabla'); //Tabla que muestra los datos ingresados en el form
 const totalMostrado = document.getElementById('totalMostrado'); //Celda de la tabla que muestra la suma de los gastos
 
-//Total de todas las compras
-let totalGeneral = 0;
 let todosLosItemes = []; //Lista de items
-
-
 
 //Evento para enviar los datos del form a la tabla
 formGastos.addEventListener("submit", (e) => {
@@ -18,8 +14,6 @@ formGastos.addEventListener("submit", (e) => {
     const item = document.getElementById('item').value; //Que item compro
     const gasto = document.getElementById('gasto').value; //Cuanto pago por los items
 
-    //Sumo cada gasto ingresado al total
-    totalGeneral += Number(gasto);
 
     //Agrego cada item a un objeto
     const cadaItem = {
@@ -30,23 +24,75 @@ formGastos.addEventListener("submit", (e) => {
 
     //Se los paso a un array
     todosLosItemes.push(cadaItem);
+    //Limpio el form
+    formGastos.reset();
 
+    //Renderizo tabla
+    tablaDetalles(todosLosItemes);
 
-    //Inserto una fila con los datos de cada compra
-    cuerpoTabla.innerHTML += `
-    <tr>
-    <th>${nombrePersona}</th><td> ${item} </td><td> ${gasto}</td>
-    </tr>
-    `
-
-    //Muestro el total con todas la compras    
-    totalMostrado.innerHTML = totalGeneral.toFixed(1);
-
-    formGastos.reset()
-    if(tablaRepartidora){
-        crearTabla(todosLosItemes, cantParticipantes.value);
-    } 
 })
+
+//FUNCION PARA CALCULAR EL TOTAL
+function calcularTotal(arr) {
+    return arr.reduce((acc, item) => acc + Number(item.precio), 0)
+}
+
+//FUNCION PARA RENDERIZAR TABLA DE DETALLES
+function tablaDetalles(arr) {
+
+    //Limpio la tabla
+    cuerpoTabla.innerHTML = "";
+
+    //Creo tabla de detalle de gastos
+    for (let i = 0; i < arr.length; i++) {
+
+        //Crear fila
+        let tr = document.createElement('tr');
+
+        //Encabezado de cada fila con el nombre del comprador
+        let th = document.createElement('th');
+        th.textContent = arr[i].comprador;
+        tr.appendChild(th);
+
+        //Nombre del item comprado
+        let td = document.createElement('td');
+        td.textContent = arr[i].nombreItem;
+        tr.appendChild(td);
+
+        //Precio del item comprado
+        let tdPrecio = document.createElement('td');
+        tdPrecio.textContent = arr[i].precio;
+        tr.appendChild(tdPrecio);
+
+        //Boton para luego eliminar
+        let botonElminar = document.createElement('button')
+        botonElminar.type = "button";
+        botonElminar.classList.add("btn-eliminar");
+        botonElminar.innerHTML = `<i class="fa-regular fa-trash-can"></i>`;
+        botonElminar.dataset.index = i;
+
+        tr.appendChild(botonElminar);
+
+        cuerpoTabla.appendChild(tr);
+
+    }
+
+    //Calculo el total
+        let total = calcularTotal(arr);
+        totalMostrado.textContent = total.toFixed(1);
+        
+}
+
+cuerpoTabla.addEventListener("click", (e) => {
+    const boton = e.target.closest(".btn-eliminar");
+    if (!boton) return;
+
+    const index = Number(boton.dataset.index);
+
+    todosLosItemes.splice(index, 1);
+    tablaDetalles(todosLosItemes);
+})
+
 
 //Determinar cantidad de participantes y en que gasto participo
 const formRepartir = document.getElementById('form-repartir');
@@ -63,10 +109,11 @@ formRepartir.addEventListener("submit", (e) => {
 })
 
 
+//FUNCION PARA LLAMAR A LA TABLA REPARTIDORA
 function crearTabla(listaEncabezados, totalFilas) {
 
     console.log(listaEncabezados[0].nombreItem);
-    
+
 
     tablaRepartidora.innerHTML = "";
 
@@ -101,7 +148,7 @@ function crearTabla(listaEncabezados, totalFilas) {
         thParticipantes.id = `"participante${i}"`; //Le agrego un id por participante
 
         let thInput = document.createElement('input')
-        thInput.type = "text";                              
+        thInput.type = "text";
         thInput.id = `participante-${i}`;
         thInput.placeholder = `Participante ${i}`;
         thInput.className = "cada-participante";
@@ -122,13 +169,10 @@ function crearTabla(listaEncabezados, totalFilas) {
             checkbox.name = `${listaEncabezados[j].nombreItem}`;
             checkbox.dataset.fila = `${i}`;
             checkbox.dataset.columna = `${j}`;
-            
+
             td.appendChild(checkbox);
-
-            let tdTotal = document.createElement("totalIndividual");
-            tdTotal.innerHTML
+    
             tr.appendChild(td);
-
 
         }
 
@@ -142,53 +186,99 @@ function crearTabla(listaEncabezados, totalFilas) {
 
     }
 
-
+    participacion = crearMatriz();
 }
 
 
-function calcularTotalesIndividuales(){
-    
-    let subtotales = new Array(Number(cantParticipantes.value)).fill(0);//Creo array con tantos 0 como paticipantes 
-    let participantesPorItem = new Array(todosLosItemes.length).fill(0);//Creo attay tantos 0 como items
-
-    console.log(subtotales)
-    console.log(participantesPorItem)
-
-    const todosCheckbox = document.querySelectorAll('.check:checked');
-    
-    todosCheckbox.forEach((element) => {
-        
-        participantesPorItem[Number(element.dataset.columna)]++
-    })
-    
-
-    todosCheckbox.forEach((element) => {
-        
-        let numeroFila = Number(element.dataset.fila);//indice participante 
-        let numeroColumna = Number(element.dataset.columna);//indice item
-
-        let precio = todosLosItemes[numeroColumna].precio;
-        let divisor = participantesPorItem[numeroColumna];
-
-        let cadaSubtotal = precio / divisor;
-        subtotales[numeroFila] += cadaSubtotal;
-        }  
-    )
-
-    for(let i=0; i < subtotales.length; i++){
-        let indiceSubtotal = document.getElementById(`total-${i}`)
-        indiceSubtotal.textContent = subtotales[i].toFixed(1)
-    }
-    console.log(participantesPorItem)
-    }
-
+let participantes = [];//Array para la matriz
+let participacion = [];
 
 tablaRepartidora.addEventListener('change', (e) => {
 
-    calcularTotalesIndividuales()
-    
+    actualizarMatriz(e);   
+
 })
 
+//FUNCION PARA CREAR LA MATRIZ
+function crearMatriz() { 
 
+    participantes = [];
+
+    const numeroParticipantes = Number(document.getElementById('cantParticipantes').value);
+
+    for(let i = 0; i < numeroParticipantes; i++){
+
+        const arr = new Array(todosLosItemes.length).fill(false);
+        participantes.push(arr);
+        
+    }
+    return participantes;
+    
+}
+console.log(participantes)//BORRAR
+
+//FUNCION PARA ACTUALIZAR LA MATRIZ DENTRO DEL EVENTO CHANGE
+function actualizarMatriz(e){
+
+    if(e.target.type !== "checkbox") return; //Retorno si el cambio no se hizo en un checkbox
+
+
+    const fila = Number(e.target.dataset.fila); //Busco el data set fila del checkbox que se cambio
+    const columna = Number(e.target.dataset.columna); //Busco el data set columna del checkbox que se cambio
+    const estado = e.target.checked; //Busco el estado del checkbox que se cambio (true o false)
+
+    participacion[fila][columna] = estado; //Actualizo la matriz con el estado del checkbox que se cambio
+    
+    const totales = calcularTotalIndividual();//Calculo el total individual de cada participante y lo guardo en un array
+
+    renderTotales(totales);
+    console.log(totales)//BORRAR
+}
+
+function calcularTotalIndividual(){
+    let totales = new Array(participantes.length).fill(0);
+
+    for(let j = 0; j < todosLosItemes.length; j++){
+        let precio = Number(todosLosItemes[j].precio);
+        let participantesPorItem = 0;
+
+        for(let i=0; i < participacion.length; i++){
+            if(participacion[i][j]){
+                participantesPorItem++;
+            }
+        }
+
+        if(participantesPorItem === 0) continue;
+        let parte = precio / participantesPorItem;
+
+        for(let i = 0; i < participacion.length; i++){
+            if(participacion[i][j]){
+                totales[i] += parte
+            }
+            
+        }
+        
+    }
+    console.log(totales)
+    return totales;
+}
+
+
+
+function renderTotales(totales){
+    for(let i = 0; i < totales.length; i++){
+        let cadaTotal = document.getElementById(`total-${i}`);
+        
+        cadaTotal.textContent = Number(totales[i]).toFixed(1);
+    }
+}
+
+let matrizDeudas = [];//Matriz para calcular las deudas entre participantes
+function calcularDudas(){
+
+    
+    document.querySelectorAll('.cada-participante')
+
+}
 
 
